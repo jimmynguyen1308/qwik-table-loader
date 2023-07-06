@@ -9,55 +9,30 @@ export type TableRecord = {
 
 export interface ITableLoader {
   tData: Array<TableRecord>
+  transformHeads?: boolean
+  tailwindClasses?: boolean
   tHeadings?: {
     props?: any
     accessor?: QRL<(heading: string) => JSX.Element>
-    options?: {
-      transformHeads?: boolean
-      tailwindClasses?: boolean
-    }
   }
   tRows?: {
     props?: any
     accessor?: QRL<(heading: string) => JSX.Element>
-    options?: {
-      tailwindClasses?: boolean
-    }
   }
   tCells?: {
     props?: any
     accessor?: QRL<(record: TableRecord, param: string) => JSX.Element>
-    options?: {
-      tailwindClasses?: boolean
-    }
   }
 }
 
 export const tableLoader = $(
   ({
     tData,
-    tHeadings = {
-      props: undefined,
-      accessor: undefined,
-      options: {
-        transformHeads: true,
-        tailwindClasses: true,
-      },
-    },
-    tRows = {
-      props: undefined,
-      accessor: undefined,
-      options: {
-        tailwindClasses: true,
-      },
-    },
-    tCells = {
-      props: undefined,
-      accessor: undefined,
-      options: {
-        tailwindClasses: true,
-      },
-    },
+    transformHeads = true,
+    tailwindClasses = true,
+    tHeadings,
+    tRows,
+    tCells,
   }: ITableLoader) => {
     const headingList = Object.keys(tData[0])
 
@@ -67,18 +42,18 @@ export const tableLoader = $(
      */
     const renderHeading = $((heading: string) => (
       <th
-        {...tHeadings.props}
+        {...tHeadings?.props}
         class={
           tHeadings?.props?.class
             ? tHeadings?.props?.class
-            : tHeadings.options?.tailwindClasses
-            ? "table-heading min-w-[100px] border border-slate-600 bg-gray-300 text-left"
+            : tailwindClasses
+            ? "table-heading border border-slate-600 bg-gray-300 text-left"
             : "table-heading"
         }
       >
-        {tHeadings.accessor
+        {tHeadings?.accessor
           ? tHeadings?.accessor(heading)
-          : tHeadings.options?.transformHeads
+          : transformHeads
           ? param2string(heading)
           : heading}
       </th>
@@ -86,26 +61,26 @@ export const tableLoader = $(
 
     const renderCell = $((record: TableRecord, param: string) => (
       <td
-        {...tCells.props}
+        {...tCells?.props}
         class={
           tCells?.props?.class
             ? tCells?.props?.class
-            : tCells.options?.tailwindClasses
+            : tailwindClasses
             ? "table-cell border border-slate-700"
             : "table-cell"
         }
       >
-        {tCells.accessor ? tCells?.accessor(record, param) : record[param]}
+        {tCells?.accessor ? tCells?.accessor(record, param) : record[param]}
       </td>
     ))
 
     const renderRow = $((record: TableRecord, headings: Array<string>) => (
       <tr
-        {...tRows.props}
+        {...tRows?.props}
         class={
           tRows?.props?.class
             ? tRows?.props?.class
-            : tRows.options?.tailwindClasses
+            : tailwindClasses
             ? "table-row border border-slate-600"
             : "table-row"
         }
