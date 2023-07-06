@@ -10,15 +10,23 @@ export interface ITableLoader {
   transformHeads?: boolean
   tailwindClasses?: boolean
   tHeadings?: {
-    props?: any
+    props?: {
+      class?: string
+      [key: string]: JSXChildren
+    }
     accessor?: QRL<(heading: string) => JSX.Element>
   }
   tRows?: {
-    props?: any
-    accessor?: QRL<(heading: string) => JSX.Element>
+    props?: {
+      class?: string
+      [key: string]: JSXChildren
+    }
   }
   tCells?: {
-    props?: any
+    props?: {
+      class?: string
+      [key: string]: JSXChildren
+    }
     accessor?: QRL<(record: TableRecord, param: string) => JSX.Element>
   }
 }
