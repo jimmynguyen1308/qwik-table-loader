@@ -121,7 +121,9 @@ In order to customize the table, simply provide your desired properties to the `
 
 ## API
 
-### `tableLoader`
+### 1. `tableLoader`
+
+These properties can be set in `tableLoader` during memoization.
 
 | Property              | Type                                                     | Description                                                                                                                                                           | Required              |
 | --------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
@@ -139,3 +141,14 @@ In order to customize the table, simply provide your desired properties to the `
 | tCells.props          | { [key: string]: JSXChildren }                           | Add props to all &lt;td&gt; tags.                                                                                                                                     | ❌                    |
 | tCells.props.class    | string                                                   | Add class list to all &lt;td&gt; tags. For `TailwindCSS` users, you can add your classes here.                                                                        | ❌                    |
 | tCells.accessor       | QRL<(record: TableRecord, param: string) => JSX.Element> | Render custom JSX elements inside all &lt;td&gt; tags.                                                                                                                | ❌                    |
+
+### 2. Return Components
+
+These are the components returned by `tableLoader`.
+
+| Component   | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+| `<Head />`  | List of table headers. Must be wrapped in &lt;thead&gt; tag. |
+| `<THead />` | List of table headers wrapped in &lt;thead&gt; tag.          |
+| `<Body />`  | Table body. Must be wrapped in &lt;tbody&gt; tag.            |
+| `<TBody />` | Table body wrapped in &lt;tbody&gt; tag.                     |
