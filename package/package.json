@@ -1,0 +1,26 @@
+{
+  "name": "qwik-table-loader",
+  "version": "0.0.2",
+  "description": "A table library for Qwik",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimmynguyen1308/qwiktable.git"
+  },
+  "keywords": [
+    "qwik",
+    "table"
+  ],
+  "author": "jimmynguyen1308",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jimmynguyen1308/qwiktable/issues"
+  },
+  "homepage": "https://github.com/jimmynguyen1308/qwiktable#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
