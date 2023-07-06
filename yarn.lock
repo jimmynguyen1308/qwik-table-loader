@@ -4598,9 +4598,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qwiktable@workspace:.":
+"qwik-table-loader@workspace:.":
   version: 0.0.0-use.local
-  resolution: "qwiktable@workspace:."
+  resolution: "qwik-table-loader@workspace:."
   dependencies:
     "@builder.io/qwik": ^1.2.5
     "@builder.io/qwik-city": ^1.2.5
