@@ -1,6 +1,6 @@
 import { component$, $ } from "@builder.io/qwik"
-import { TableRecord, ITableLoader } from "~/types"
-import { param2string } from "~/utils"
+import { TableRecord, ITableLoader } from "../types"
+import { param2string } from "../utils"
 
 export const tableLoader = $(
   ({

@@ -1,6 +1,6 @@
 {
   "name": "qwik-table-loader",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A table library for Qwik",
   "main": "src/index.ts",
   "engines": {

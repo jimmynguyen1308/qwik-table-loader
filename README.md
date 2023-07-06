@@ -74,7 +74,7 @@ pnpm install -D qwik-table-loader
 
 ### 2. Add to codebase
 
-Import the library...
+Import the library
 
 ```typescript
 import { component$, useResource$, Resource } from "@builder.io/qwik"
