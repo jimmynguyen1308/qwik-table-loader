@@ -1,25 +1,53 @@
-import { component$ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
+import { component$, useResource$, Resource } from "@builder.io/qwik"
+import type { DocumentHead } from "@builder.io/qwik-city"
+import { tableLoader } from "~/loaders/tableLoader"
+import { mocked } from "~/__mock__/data"
 
 export default component$(() => {
+  const test = useResource$(async () => {
+    const { Head, Body, THead, TBody } = await tableLoader({
+      tData: mocked,
+    })
+    return { Head, Body, THead, TBody }
+  })
+
   return (
     <>
-      <h1>Hi 👋</h1>
-      <p>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
-      </p>
+      <Resource
+        value={test}
+        onPending={() => <></>}
+        onResolved={({ Head, Body }) => (
+          <table>
+            <thead>
+              <Head />
+            </thead>
+            <tbody>
+              <Body />
+            </tbody>
+          </table>
+        )}
+      />
+      <br />
+      <Resource
+        value={test}
+        onPending={() => <></>}
+        onResolved={({ THead, TBody }) => (
+          <table>
+            <THead />
+            <TBody />
+          </table>
+        )}
+      />
     </>
-  );
-});
+  )
+})
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "Qwiktable: Test Component",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
+      content: "Example for Qwiktable",
     },
   ],
-};
+}
