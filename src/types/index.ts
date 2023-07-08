@@ -8,13 +8,12 @@ export type TableRecord = {
 export interface ITableLoader {
   tData: Array<TableRecord>
   transformHeads?: boolean
-  tailwindClasses?: boolean
   tHeadings?: {
     props?: {
       class?: string
       [key: string]: JSXChildren
     }
-    accessor?: QRL<(heading: string) => JSX.Element>
+    element$?: QRL<(heading: string) => JSX.Element>
   }
   tRows?: {
     props?: {
@@ -27,6 +26,6 @@ export interface ITableLoader {
       class?: string
       [key: string]: JSXChildren
     }
-    accessor?: QRL<(record: TableRecord, param: string) => JSX.Element>
+    element$?: QRL<(record: TableRecord, param: string) => JSX.Element>
   }
 }
