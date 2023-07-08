@@ -1,5 +1,5 @@
 import { component$, useResource$, Resource, $ } from "@builder.io/qwik"
-import { tableLoader } from "../loaders/tableLoader"
+import { tableLoader } from "../src/loaders/tableLoader" // change this to "qwik-table-loader"
 
 export default component$(() => {
   const tData = useResource$(async () => {
