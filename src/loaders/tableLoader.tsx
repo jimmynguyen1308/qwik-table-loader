@@ -1,12 +1,11 @@
 import { component$, $ } from "@builder.io/qwik"
-import { TableRecord, ITableLoader } from "../types"
+import type { TableRecord, ITableLoader } from "../types"
 import { param2string } from "../utils"
 
 export const tableLoader = $(
   ({
     tData,
     transformHeads = true,
-    tailwindClasses = true,
     tHeadings,
     tRows,
     tCells,
@@ -21,15 +20,11 @@ export const tableLoader = $(
       <th
         {...tHeadings?.props}
         class={
-          tHeadings?.props?.class
-            ? tHeadings?.props?.class
-            : tailwindClasses
-            ? "table-heading border border-slate-600 bg-gray-300 text-left"
-            : "table-heading"
+          tHeadings?.props?.class ? tHeadings.props.class : "table-heading"
         }
       >
-        {tHeadings?.accessor
-          ? tHeadings?.accessor(heading)
+        {tHeadings?.element$
+          ? tHeadings.element$(heading)
           : transformHeads
           ? param2string(heading)
           : heading}
@@ -39,60 +34,35 @@ export const tableLoader = $(
     const renderCell = $((record: TableRecord, param: string) => (
       <td
         {...tCells?.props}
-        class={
-          tCells?.props?.class
-            ? tCells?.props?.class
-            : tailwindClasses
-            ? "table-cell border border-slate-700"
-            : "table-cell"
-        }
+        class={tCells?.props?.class ? tCells.props.class : "table-cell"}
       >
-        {tCells?.accessor ? tCells?.accessor(record, param) : record[param]}
+        {tCells?.element$ ? tCells.element$(record, param) : record[param]}
       </td>
     ))
 
     const renderRow = $((record: TableRecord, headings: Array<string>) => (
       <tr
         {...tRows?.props}
-        class={
-          tRows?.props?.class
-            ? tRows?.props?.class
-            : tailwindClasses
-            ? "table-row border border-slate-600"
-            : "table-row"
-        }
+        class={tRows?.props?.class ? tRows.props.class : "table-row"}
       >
         {headings.map((param: string) => renderCell(record, param))}
       </tr>
     ))
 
-    /* RETURNED COMPONENTS
+    /* RETURN COMPONENTS
      * @type: component$
      * @desc: render JSX elements into big element blocks, ie. Head or Body
      */
-    const Head = component$(() => (
+
+    const THead = component$(() => (
       <tr>{headingList.map((heading: string) => renderHeading(heading))}</tr>
     ))
 
-    const THead = component$(() => (
-      <thead>
-        <Head />
-      </thead>
-    ))
-
-    const Body = component$(() => (
+    const TBody = component$(() => (
       <>{tData.map((record: TableRecord) => renderRow(record, headingList))}</>
     ))
 
-    const TBody = component$(() => (
-      <tbody>
-        <Body />
-      </tbody>
-    ))
-
     return {
-      Head,
-      Body,
       THead,
       TBody,
     }
