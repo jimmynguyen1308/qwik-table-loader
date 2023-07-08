@@ -11,8 +11,8 @@ export const param2string = (str: string) => {
   snakeCaseWords.forEach(
     (word: string, index: number) =>
       (returnVal +=
-        word?.charAt(0).toUpperCase() +
-        word?.slice(1) +
+        word.charAt(0).toUpperCase() +
+        word.slice(1) +
         (index === snakeCaseWords.length - 1 ? "" : " "))
   )
 
