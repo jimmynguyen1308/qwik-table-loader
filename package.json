@@ -7,9 +7,6 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "build": "qwik build",
-    "build.client": "vite build",
-    "build.types": "tsc --incremental --noEmit",
     "fmt": "prettier --write .",
     "fmt.check": "prettier --check .",
     "lint": "eslint \"src/**/*.ts*\"",
