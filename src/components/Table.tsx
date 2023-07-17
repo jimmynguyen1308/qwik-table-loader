@@ -1,7 +1,7 @@
 import { useStore, useTask$, component$ } from "@builder.io/qwik"
 import SortArrows from "./SortArrows"
 import FilterInput from "./FilterInput"
-import { param2string, sortTable, filterTable } from "../utils"
+import { param2string, sortTable } from "../utils"
 import type {
   TableProps,
   TableRecord,
@@ -31,8 +31,8 @@ export default component$(
       tData: tData,
       tHeadings: {
         headingList: Object.keys(tData[0]),
-        customHeadings: { ...tHeadings.customHeadings },
-        ...tHeadings,
+        customHeadings: { ...tHeadings?.customHeadings },
+        ...tHeadings!,
       },
       tColumns: {
         ...tColumns,
@@ -56,11 +56,19 @@ export default component$(
     useTask$(async ({ track }) => {
       track(() => [sortConfigs.param, sortConfigs.order, filterConfigs.params])
 
-      const filteredData = await filterTable(
-        tData,
-        tableData.tHeadings.headingList,
-        filterConfigs
-      )
+      const filteredData = tData.filter((record: TableRecord) => {
+        let i = 0
+        tableData.tHeadings.headingList.map((param: string) => {
+          if (
+            record[param]
+              ?.toString()
+              .toLowerCase()
+              .includes(filterConfigs.params[param]?.toString().toLowerCase())
+          )
+            ++i
+        })
+        if (i === Object.keys(filterConfigs?.params).length) return record
+      })
 
       if (sortConfigs.order === 0) {
         tableData.tData = filteredData
@@ -82,10 +90,10 @@ export default component$(
                 <th
                   key={index}
                   class={`
-                  ${tableData.tHeadings.classList}
-                  ${tableData.tColumns?.classList}
-                  ${tableData.tColumns?.columnClassList?.[heading]}
-                `}
+                    ${tableData.tHeadings.classList}
+                    ${tableData.tColumns?.classList}
+                    ${tableData.tColumns?.columnClassList?.[heading]}
+                  `}
                 >
                   <div class="flex flex-col">
                     <div class="flex flex-row items-center justify-between gap-[10px]">
@@ -95,16 +103,22 @@ export default component$(
                         ? tableData.tHeadings.element$[heading](
                             tableData.tHeadings.customHeadings?.[heading]!
                           ) || tableData.tHeadings.customHeadings?.[heading]
-                        : tableData.tHeadings.element$[heading](
+                        : tableData.tHeadings.element$?.[heading]?.(
                             param2string(heading)
                           ) || param2string(heading)}
                       {tableData.sortOptions?.params?.includes(heading) && (
                         <SortArrows
                           heading={heading}
                           classList={{
-                            container: "",
-                            arrowUp: "",
-                            arrowDown: "",
+                            container:
+                              tableData.tableOptions?.sortArrowsClassList
+                                ?.container,
+                            arrowUp:
+                              tableData.tableOptions?.sortArrowsClassList
+                                ?.arrowUp,
+                            arrowDown:
+                              tableData.tableOptions?.sortArrowsClassList
+                                ?.arrowDown,
                           }}
                           sortConfigs={sortConfigs}
                           highlightColor={tableData.sortOptions.highlightColor}
@@ -118,7 +132,9 @@ export default component$(
                         {tableData.filterOptions?.params?.[heading] ===
                         "search" ? (
                           <FilterInput
-                            classList={""}
+                            classList={
+                              tableData.tableOptions?.filterInputClassList
+                            }
                             heading={heading}
                             filterConfigs={filterConfigs}
                           />

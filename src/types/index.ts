@@ -33,6 +33,12 @@ export type TableData = {
   }
   tableOptions?: {
     classList?: string
+    sortArrowsClassList?: {
+      container?: string
+      arrowUp?: string
+      arrowDown?: string
+    }
+    filterInputClassList?: string
   }
   sortOptions?: {
     params?: Array<string>
@@ -86,6 +92,12 @@ export type TableProps = {
   }
   tableOptions?: {
     classList?: string
+    sortArrowsClassList?: {
+      container?: string
+      arrowUp?: string
+      arrowDown?: string
+    }
+    filterInputClassList?: string
   }
   sortOptions?: {
     params?: Array<string>
