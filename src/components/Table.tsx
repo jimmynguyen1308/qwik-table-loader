@@ -100,7 +100,7 @@ export default component$(
                       {Object.keys(
                         tableData.tHeadings.customHeadings || []
                       ).includes(heading)
-                        ? tableData.tHeadings.element$[heading](
+                        ? tableData.tHeadings.element$?.[heading](
                             tableData.tHeadings.customHeadings?.[heading]!
                           ) || tableData.tHeadings.customHeadings?.[heading]
                         : tableData.tHeadings.element$?.[heading]?.(

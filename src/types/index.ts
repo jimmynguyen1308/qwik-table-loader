@@ -12,7 +12,7 @@ export type TableData = {
     customHeadings?: {
       [key: string]: string
     }
-    element$: {
+    element$?: {
       [key: string]: QRL<(heading: string) => any>
     }
   }
@@ -66,12 +66,12 @@ export type FilterConfigs = {
 
 export type TableProps = {
   tData: Array<TableRecord>
-  tHeadings: {
+  tHeadings?: {
     classList?: string
     customHeadings?: {
       [key: string]: string
     }
-    element$: {
+    element$?: {
       [key: string]: QRL<(heading: string) => any>
     }
   }
@@ -81,7 +81,7 @@ export type TableProps = {
       [key: string]: string
     }
     customColumns?: {
-      [key: string]: any
+      [key: string]: QRL<(record: TableRecord, param: string) => any>
     }
     element$?: {
       [key: string]: QRL<(record: TableRecord, param: string) => any>
