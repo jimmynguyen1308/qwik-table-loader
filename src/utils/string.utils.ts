@@ -7,7 +7,7 @@ export const param2string = (str: string) => {
     camelCaseWords.charAt(0).toUpperCase() + camelCaseWords.slice(1)
 
   // Convert snake case
-  const snakeCaseWords = result.split("_")
+  const snakeCaseWords = result.split(/_|-/)
   snakeCaseWords.forEach(
     (word: string, index: number) =>
       (returnVal +=

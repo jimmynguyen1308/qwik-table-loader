@@ -1,2 +1,2 @@
-export * from "./loaders/tableLoader"
+export * from "./components/Table"
 export * from "./types"

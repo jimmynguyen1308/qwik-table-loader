@@ -1,5 +1,5 @@
 import { $ } from "@builder.io/qwik"
-import type { TableRecord } from "../types"
+import type { TableRecord, FilterConfigs } from "../types"
 
 export const sortTable = $(
   (data: Array<TableRecord>, param: string, isAscending: boolean) => {
@@ -18,20 +18,26 @@ export const sortTable = $(
   }
 )
 
-export const searchTable = (
-  data: Array<TableRecord>,
-  params: Array<string>,
-  keyword: string
-) =>
-  data.filter((record: TableRecord) => {
-    let i = 0
-    params.forEach((param: string) => {
-      record[param]?.toString().toLowerCase().includes(keyword.toLowerCase()) &&
-        ++i
-      return
+export const filterTable = $(
+  (
+    records: Array<TableRecord>,
+    headings: Array<string>,
+    filterConfigs: FilterConfigs
+  ) =>
+    records.filter((record: TableRecord) => {
+      let i = 0
+      headings.map((param: string) => {
+        if (
+          record[param]
+            ?.toString()
+            .toLowerCase()
+            .includes(filterConfigs.params[param].toString().toLowerCase())
+        )
+          ++i
+      })
+      if (i === Object.keys(filterConfigs.params).length) return record
     })
-    if (i > 0) return record
-  })
+)
 
 export const getTotalPages = (
   total_record: number,
