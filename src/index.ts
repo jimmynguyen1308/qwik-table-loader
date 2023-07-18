@@ -1,4 +1,3 @@
-import Table from "./components/Table"
+import TableLoader from "./components/Table"
 
-export default Table
-export * from "./types"
+export { TableLoader }

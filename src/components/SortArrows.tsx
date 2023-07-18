@@ -51,7 +51,7 @@ export default component$(
       })}
     >
       <SvgArrowUp
-        class={classList?.arrowUp || "mb-[-8.5px]"}
+        class={classList?.arrowUp || "mt-[-8px] mb-[-9px]"}
         width={24}
         height={24}
         color={
@@ -61,7 +61,7 @@ export default component$(
         }
       />
       <SvgArrowDown
-        class={classList?.arrowDown || "mb-[-8.5px]"}
+        class={classList?.arrowDown || "mt-[-9px] mb-[-8px]"}
         width={24}
         height={24}
         color={

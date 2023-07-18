@@ -47,7 +47,7 @@ export type TableData = {
   }
   filterOptions?: {
     params?: {
-      [key: string]: "search" | "options"
+      [key: string]: string
     }
     filterClassList?: string
   }
@@ -106,7 +106,7 @@ export type TableProps = {
   }
   filterOptions?: {
     params?: {
-      [key: string]: "search" | "options"
+      [key: string]: string
     }
     filterClassList?: string
   }
