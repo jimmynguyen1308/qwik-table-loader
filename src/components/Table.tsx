@@ -95,7 +95,7 @@ export default component$(
                     ${tableData.tColumns?.columnClassList?.[heading]}
                   `}
                 >
-                  <div class="flex flex-col">
+                  <div class="flex flex-col gap-2">
                     <div class="flex flex-row items-center justify-between gap-[10px]">
                       {Object.keys(
                         tableData.tHeadings.customHeadings || []
