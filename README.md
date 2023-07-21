@@ -17,6 +17,10 @@ By [`@jimmynguyen1308`](https://github.com/jimmynguyen1308)
 
 ## Features
 
+### v0.0.8
+
+- Clean up package dependencies & unused files
+
 ### v.0.0.7 (overhaul, more dynamic and s-table version)
 
 - Use `TableLoader` component to render table.
