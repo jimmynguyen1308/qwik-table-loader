@@ -1,4 +1,4 @@
-import type { JSXChildren, QRL } from "@builder.io/qwik"
+import type { JSXChildren, QRL, JSXNode } from "@builder.io/qwik"
 
 export type TableRecord = {
   [key: string]: JSXChildren
@@ -13,7 +13,7 @@ export type TableData = {
       [key: string]: string
     }
     element$?: {
-      [key: string]: QRL<(heading: string) => any>
+      [key: string]: QRL<(heading: string) => JSXNode | string>
     }
   }
   tColumns?: {
@@ -22,23 +22,34 @@ export type TableData = {
       [key: string]: string
     }
     customColumns?: {
-      [key: string]: any
+      [key: string]: QRL<(record: TableRecord, param: string) => string> // for filter feature (tba)
     }
     element$?: {
-      [key: string]: QRL<(record: TableRecord, param: string) => any>
+      [key: string]: QRL<
+        (record: TableRecord, param: string) => JSXNode | string
+      >
     }
   }
   tRows?: {
     classList?: string
   }
   tableOptions?: {
-    classList?: string
-    sortArrowsClassList?: {
-      container?: string
-      arrowUp?: string
-      arrowDown?: string
+    classList?: {
+      table?: string
+      thead?: string
+      theadWrapper?: string
+      headArrowWrapper?: string
+      sortArrows?: {
+        container?: string
+        arrowUp?: string
+        arrowDown?: string
+      }
+      filterInput?: {
+        container?: string
+        input?: string
+      }
+      tbody?: string
     }
-    filterInputClassList?: string
   }
   sortOptions?: {
     params?: Array<string>
@@ -49,7 +60,6 @@ export type TableData = {
     params?: {
       [key: string]: "search" | "options"
     }
-    filterClassList?: string
   }
 }
 
@@ -72,7 +82,7 @@ export type TableProps = {
       [key: string]: string
     }
     element$?: {
-      [key: string]: QRL<(heading: string) => any>
+      [key: string]: QRL<(heading: string) => JSXNode | string>
     }
   }
   tColumns?: {
@@ -81,23 +91,34 @@ export type TableProps = {
       [key: string]: string
     }
     customColumns?: {
-      [key: string]: QRL<(record: TableRecord, param: string) => any>
+      [key: string]: QRL<(record: TableRecord, param: string) => string>
     }
     element$?: {
-      [key: string]: QRL<(record: TableRecord, param: string) => any>
+      [key: string]: QRL<
+        (record: TableRecord, param: string) => JSXNode | string
+      >
     }
   }
   tRows?: {
     classList?: string
   }
   tableOptions?: {
-    classList?: string
-    sortArrowsClassList?: {
-      container?: string
-      arrowUp?: string
-      arrowDown?: string
+    classList?: {
+      table?: string
+      thead?: string
+      theadWrapper?: string
+      headArrowWrapper?: string
+      sortArrows?: {
+        container?: string
+        arrowUp?: string
+        arrowDown?: string
+      }
+      filterInput?: {
+        container?: string
+        input?: string
+      }
+      tbody?: string
     }
-    filterInputClassList?: string
   }
   sortOptions?: {
     params?: Array<string>
@@ -106,9 +127,8 @@ export type TableProps = {
   }
   filterOptions?: {
     params?: {
-      [key: string]: "search" | "options"
+      [key: string]: "search" | "options" // for filter feature (tba)
     }
-    filterClassList?: string
   }
 }
 

@@ -8,53 +8,21 @@ By [`@jimmynguyen1308`](https://github.com/jimmynguyen1308)
 
 `qwik-table-loader` is a table library for [Qwik](https://qwik.builder.io/) which is _(heavily)_ inspired by [Tanstack Table](https://tanstack.com/table/).
 
-```typescript
-import { component$, useResource$, Resource } from "@builder.io/qwik"
-import { tableLoader } from "qwik-table-loader"
-import { mocked } from "~/__mocked__/data"
-
-export default component$(() => {
-  const tData = useResource$(async () => {
-    const { THead, TBody } = await tableLoader({
-      tData: mocked,
-    })
-    return { THead, TBody }
-  })
-
-  return (
-    <Resource
-      value={tData}
-      onResolved={({ THead, TBody }) => (
-        <table>
-          <thead>
-            <Head />
-          </thead>
-          <tbody>
-            <Body />
-          </tbody>
-        </table>
-      )}
-    />
-  )
-})
-```
-
 ## Docs
 
 - [Features](#features)
 - [Usage](#usage)
 - [API](#api)
-- [Tips](#tips)
 - [Read More](#read-more)
 
 ## Features
 
-### v.0.0.5 (first s-table version)
+### v.0.0.7 (overhaul, more dynamic and s-table version)
 
-- Use `tableLoader` to generate table JSX elements: _&lt;THead /&gt; and &lt;TBody /&gt;_.
-- Customize table elements by parsing properties into `tableLoader`.
-- Built-in methods for sophisticated table functionalities.
-- **TypeScript** and **TailwindCSS** friendly.
+- Use `TableLoader` component to render table.
+- Customize table elements & features by parsing properties into `TableLoader`.
+- Include built-in methods for sophisticated table functionalities.
+- Support **TypeScript** and **TailwindCSS**.
 
 ## Usage
 
@@ -82,135 +50,371 @@ pnpm install -D qwik-table-loader
 
 ### 2. Add to codebase
 
-Import the library
+Import the library and add it to the codebase
 
 ```typescript
-import {
-  component$,
-  useSignal,
-  useResource$,
-  Resource,
-  $,
-} from "@builder.io/qwik"
-import { tableLoader, sortTable } from "qwik-table-loader"
-import type { TableRecord } from "qwik-table-loader"
-import LoadingSpinner from "~/components/loading-spinner"
-import { mocked } from "~/__mocked__/data"
+import { component$, $ } from "@builder.io/qwik"
+import TableLoader from "qwik-table-loader/components/TableLoader"
+import type { TableRecord } from "qwik-table-loader/types"
+import { data } from "~/__mocked__/data"
+
+export default component$(() => {
+  const tData: TableRecord[] = data
+  const tHeadings = {
+    classList: "bg-gray-500 text-left text-white",
+    customHeadings: {
+      id: "Product ID",
+    },
+    element$: $((heading: string) => `Product:${heading}`),
+  }
+  const tRows = {
+    classList: "p-2 py-6",
+  }
+  return <TableLoader tData={tData} tHeadings={tHeadings} tRows={tRows} />
+})
 ```
 
-You must wrap the table data inside `useResource$`, and the return element inside `Resource`. To put it in other frameworks' language: **The data must be memoized**.
+(For **TailwindCSS**) Add the component library directory to `tailwind.config.js` file
 
 ```typescript
-export default component$(() => {
-  const data = useSignal<TableRecord[]>(mocked)
-
-  const tData = useResource$(async ({ track }) => {
-    track(() => data)
-    const { THead, TBody } = await tableLoader({
-      tData: data,
-      transformHeads: true,
-      tailwindClasses: true,
-      tHeadings: {
-        props: {
-          class: "bg-rose-500 text-white"
-          onClick$: $(() => onClickFunc())
-        }
-        element$: $((heading) => (
-          <div onClick$={$(() => sortTable(data, heading, true))}>
-            {heading}
-          </div>
-        )),
-      },
-    })
-    return { THead, TBody }
-  })
-
-  return (
-    <Resource
-      value={tData}
-      onPending={() => <LoadingSpinner />}
-      onResolved={({ THead, TBody }) => (
-        <table>
-          <thead>
-            <Head />
-          </thead>
-          <tbody>
-            <Body />
-          </tbody>
-        </table>
-      )}
-    />
-  )
-})
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{html,js,jsx,ts,tsx}", // your src directory
+    "./node_modules/qwik-table-loader/components/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
 ```
 
 ### 3. Customize loader's properties
 
-In order to customize the table, simply provide your desired properties to the `tableLoader` (see [API](#api) for more details).
-
-### 4. Add table functions
-
-Such methods including _search_, _filter_ or _sort_ can be found the library as well for your convenience (see [API](#api) for more details).
+In order to customize the table, simply provide your desired properties to the `TableLoader` (see [API](#api) for more details).
 
 ## API
 
-### 1. `tableLoader`
+### 1. `TableLoader` properties
 
-These properties can be set in `tableLoader` during memoization.
-
-| Property              | Type                                                     | Description                                                                                                                                                           | Required                         |
-| --------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| tData                 | Record[]                                                 | Table data _(must be memoized)_.                                                                                                                                      | ✅                               |
-| transformHeads        | boolean                                                  | Checkbox if you want to transform your data params to headings (ie. turn "date_received" to "Date Received"). Support both `snakeCaseParams` and `camel_case_params`. | ❌ (default = `true`)            |
-| tHeadings             | Object                                                   | Customize table headings here!                                                                                                                                        | ❌                               |
-| tHeadings.props       | { [key: string]: JSXChildren }                           | Add props to all &lt;th&gt; tags.                                                                                                                                     | ❌                               |
-| tHeadings.props.class | string                                                   | Add class list to all &lt;th&gt; tags. For `TailwindCSS` users, you can change your classes here.                                                                     | ❌ (default = `"table-heading"`) |
-| tHeadings.accessor    | QRL<(heading: string) => JSX.Element>                    | Render custom JSX elements inside all &lt;th&gt; tags.                                                                                                                | ❌                               |
-| tRows                 | Object                                                   | Customize table rows here!                                                                                                                                            | ❌                               |
-| tRows.props           | { [key: string]: JSXChildren }                           | Add props to all &lt;tr&gt; tags.                                                                                                                                     | ❌                               |
-| tRows.props.class     | string                                                   | Add class list to all &lt;tr&gt; tags. For `TailwindCSS` users, you can change your classes here.                                                                     | ❌ (default = `"table-row"`)     |
-| tCells                | Object                                                   | Customize table cells here!                                                                                                                                           | ❌                               |
-| tCells.props          | { [key: string]: JSXChildren }                           | Add props to all &lt;td&gt; tags.                                                                                                                                     | ❌                               |
-| tCells.props.class    | string                                                   | Add class list to all &lt;td&gt; tags. For `TailwindCSS` users, you can change your classes here.                                                                     | ❌ (default = `"table-cell"`)    |
-| tCells.accessor       | QRL<(record: TableRecord, param: string) => JSX.Element> | Render custom JSX elements inside all &lt;td&gt; tags.                                                                                                                | ❌                               |
-
-### 2. `tableLoader` Return Components
-
-These are the components returned by `tableLoader`.
-
-| Component   | Type         | Description                                                  |
-| ----------- | ------------ | ------------------------------------------------------------ |
-| `<THead />` | `component$` | List of table headers. Must be wrapped in &lt;thead&gt; tag. |
-| `<TBody />` | `component$` | Table body. Must be wrapped in &lt;tbody&gt; tag.            |
-
-### 3. Methods
-
-These methods support sophisticated table functions apart from generating table data. They can be imported directly from the library, same as `tableLoader`.
-
-| Method            | Parameters                                               | Description                                                                                                             |
-| ----------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `param2string()`  | str: `string`                                            | Convert `snake_case_param` or `camelCaseParam` to string. Used in table headings.                                       |
-| `string2param()`  | str: `string`, method: `"snake" or "camel"`              | Convert string to `snake_case` or `camelCase`, opposed to `param2string()` method.                                      |
-| `sortTable()`     | data: `Record[]`, param: `string`, isAcending: `boolean` | Sort table data with given heading (`param`) in ascending order (isAcending=`true`) or descending (isAcending=`false`). |
-| `searchTable()`   | data: `Record[]`, params: `string[]`, keyword: `string`  | Search table data base with given headings (`params`) and keyword (`keyword`). Can be used in search or filter inputs.  |
-| `getTotalPages()` | total_record: `number`, record_per_page: `number`        | Calculate total pages. Can be used in paginating table records.                                                         |
-
-## Tips
-
-- Make sure to name your param in your data in either `snake_case` or `camelCase` for `transformHeads` feature to work properly...
+You can choose to add different properties to `TableLoader` components in order to configure and customize the table's data, custom features (i.e. sorting and filtering), and class lists.
 
 ```typescript
-const data = {
-  name: "Jon Doe", // OK
-  date_of_birth: "1990/01/01", // OK
-  timeZone: "UTC+08:00", // OK
-  // ...
+type TableProps = {
+  tData: Array<TableRecord>
+  tHeadings?: {
+    classList?: string
+    customHeadings?: {
+      [key: string]: string
+    }
+    element$?: {
+      [key: string]: QRL<(heading: string) => JSXNode | string>
+    }
+  }
+  tColumns?: {
+    classList?: string
+    columnClassList?: {
+      [key: string]: string
+    }
+    customColumns?: {
+      [key: string]: QRL<(record: TableRecord, param: string) => string>
+    }
+    element$?: {
+      [key: string]: QRL<
+        (record: TableRecord, param: string) => JSXNode | string
+      >
+    }
+  }
+  tRows?: {
+    classList?: string
+  }
+  tableOptions?: {
+    classList?: {
+      table?: string
+      thead?: string
+      theadWrapper?: string
+      headArrowWrapper?: string
+      sortArrows?: {
+        container?: string
+        arrowUp?: string
+        arrowDown?: string
+      }
+      filterInput?: {
+        container?: string
+        input?: string
+      }
+      tbody?: string
+    }
+  }
+  sortOptions?: {
+    params?: Array<string>
+    defaultColor?: string
+    highlightColor?: string
+  }
+  filterOptions?: {
+    params?: {
+      [key: string]: "search" | "options" // "options" filter T.B.D.
+    }
+  }
 }
 ```
 
-- The table `props` property has type `[key: string]: JSXChildren` in which `JSXChildren` does NOT include `QRL`. Therefore, you should only add basic `props` such as ID or class; for event handlers like `onClick$` or `onFocus$` for example, try to add those in a separate element in the `element$` property instead.
+#### 1.1. tData
 
-- Check out some examples located in the folder `/example` in the library.
+- Type: `Array<TableRecord>`
+- Required: `true`
+
+Table data. This property is the ONLY mandatory one in order to generate table.
+
+#### 1.2. tHeadings
+
+Table heading properties. Including the configures affecting the `<thead>` part of the table.
+
+#### 1.2.1. tHeadings.classList
+
+- Type: `string`
+- Default: `"table-heading"`
+
+Table heading class list. Customize this property for styling purposes.
+
+#### 1.2.2. tHeadings.customHeadings
+
+- Type: `{ [key: string]: string }`
+
+Configure this property to render given headings into custom ones as you wish. For example:
+
+```typescript
+tHeadings: {
+  customHeadings: {
+    id: "Product ID",
+    dob: "Date of Birth",
+    some_random_key: "Custom Heading"
+  }
+}
+```
+
+#### 1.2.3. tHeadings.element$
+
+- Type: `{ [key: string]: QRL<(heading: string) => JSXNode | string> }`
+
+Configure this property to render given headings into custom ones as you wish. Similar to `tHeadings.customHeadings`, BUT the return values can be elements also. For example:
+
+```typescript
+tHeadings: {
+  customHeadings: {
+    prodId: $((heading: string) => "Product ID"),
+    some_random_key: $((heading: string) => (
+      <span class="text-rose-500">{heading}</span>
+    ))
+  }
+}
+```
+
+#### 1.3. tColumns
+
+Table column properties. Including the configures affecting table columns.
+
+#### 1.3.1. tColumns.classList
+
+- Type: `string`
+- Default: `"table-column"`
+
+Table column class list. Customize this property for styling purposes.
+
+#### 1.3.2. tColumns.columnClassList
+
+- Type: `{ [key: string]: string }`
+
+Configure this property to add custom class list to columns as you wish (for styling purposes). For example:
+
+```typescript
+tColumns: {
+  columnClassList: {
+    id: "w-[50px]",
+    description: "max-w-[200px]"
+  }
+}
+```
+
+#### 1.3.3. tColumns.customColumms
+
+- Type: `{ [key: string]: QRL<(record: TableRecord, param: string) => string> }`
+
+Configure this property to render custom columns as you wish. Similar to `tColumns.element$`; however, this is most likely to be used for the filter feature in future updates (not developed). For example:
+
+```typescript
+tColumns: {
+  customColumns: {
+    status: $((record: TableRecord, param: string) => {
+      switch (record[param]) {
+        case 0:
+          return "Inactive"
+        case 1:
+          return "Active"
+        default:
+          return "Unknown"
+      }
+    })
+  }
+}
+```
+
+#### 1.3.4. tColumns.element$
+
+- Type: `{ [key: string]: QRL<(record: TableRecord, param: string) => JSXNode | string> }`
+
+Configure this property to render custom columns as you wish. Similar to `tColumns.customColumns`, BUT the return values can be elements also. For example:
+
+```typescript
+tColumns: {
+  customColumns: {
+    status: $((record: TableRecord, param: string) => {
+      switch (record[param]) {
+        case 0:
+          return <span class="text-[#f00]">Inactive</span>
+        case 1:
+          return <span class="text-[#0f0]">Active</span>
+        default:
+          return <span>Unknown</span>
+      }
+    })
+  }
+}
+```
+
+#### 1.4. tRows
+
+Table row properties. Including the configures affecting table rows _(excluding the table heading row)_.
+
+#### 1.4.1. tRows.classList
+
+- Type: `string`
+- Default: `"table-row"`
+
+Table row class list. Customize this property for styling purposes.
+
+#### 1.5. tableOptions
+
+Contains general configuration options for the table.
+
+#### 1.5.1. tableOptions.classList
+
+Table class lists. Customize this property for styling purposes, given the overall structure of `TableLoader` component...
+
+```typescript
+return (
+  <table class={tableOptions.classList.table}>
+    <thead class={tableOptions.classList.thead}>
+      <tr>
+        <th
+          class={`
+            ${tHeadings.classList}
+            ${tColumns.classList}
+            ${ttColumns.columnClassList[heading]}
+          `}
+        >
+          <div class={tableOptions.classList.theadWrapper}>
+            <div class={tableOptions.classList.headArrowWrapper}>
+              {/* table heading here... */}
+              <SortArrows
+                classList={{
+                  container: tableOptions.classList.sortArrows.container,
+                  arrowUp: tableOptions.classList.sortArrows.arrowUp,
+                  arrowDown: tableOptions.classList.sortArrows.arrowDown,
+                }}
+              />
+            </div>
+            <div class={tableOptions.classList.filterInput.container}>
+              <FilterInput class={tableOptions.classList.filterInput.input}>
+            </div>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody class={tableOptions.classList.tbody}>
+      <tr>
+        <td
+          class={`
+            ${tRows.classList}
+            ${tColumns.classList}
+            ${tColumns.columnClassList[param]}
+          `}
+        >
+          {/* table data here... */}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+)
+```
+
+(For **TailwindCSS**) the default class lists also include some basic classes for TailwindCSS. Simply change the class lists to make changes to the default styling.
+
+#### 1.6. sortOptions
+
+Contains configuration options for `TableLoader` sorting feature.
+
+#### 1.6.1. sortOptions.params
+
+- Type: `string[]`
+
+Parameters that you wish to have the sorting feature. For example:
+
+```typescript
+const tData = [
+  {
+    id: 1,
+    name: "Jon Doe",
+    dob: "1991-01-01",
+    note: "notes for Jon",
+  },
+  {
+    id: 2,
+    name: "Jane Doe",
+    dob: "1992-02-02",
+    note: "notes for Jane",
+  },
+]
+
+const sortOptions = {
+  params: ["id", "name", "dob"], // sorting button will show in these columns
+  defaultColor: "black",
+  highlightColor: "#f00",
+}
+```
+
+#### 1.6.2. sortOptions.defaultColor & sortOptions.highlightColor
+
+- Type: `string`
+
+Colors of the sorting arrow SVGs when the sorting feature is toggled on (`highlightColor`) and toggled off (`defaultColor`). Since it's parsed directly into the SVG, it supports all color types (i.e. plain text, hex code, RGB, etc.)
+
+#### 1.7. filterOptions
+
+Contains configuration options for `TableLoader` filtering feature.
+
+#### 1.7.1. filterOptions.params
+
+- Type: `{ [key: string]: "search" | "options" }`
+
+Parameters that you wish to have the filtering feature. For example:
+
+```typescript
+const filterOptions = {
+  params: {
+    id: "search",
+    dob: "search",
+    status: "options",
+  },
+}
+```
+
+The "search" filter is ready to be used. The "options" filter, on the other hand, is not yet developed. Hopefully it will be updated in future updates.
+
+### 2. Methods
+
+Including built-in methods for sophisticated table functionalities. See [here](https://github.com/jimmynguyen1308/qwiktable/tree/master/utils).
 
 ## Read More
 

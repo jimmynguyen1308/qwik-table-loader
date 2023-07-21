@@ -31,16 +31,49 @@ export default component$(
       tData: tData,
       tHeadings: {
         headingList: Object.keys(tData[0]),
+        classList: tHeadings?.classList || "table-heading",
         customHeadings: { ...tHeadings?.customHeadings },
-        ...tHeadings!,
+        ...tHeadings,
       },
       tColumns: {
+        classList: tColumns?.classList || "table-column",
         ...tColumns,
       },
       tRows: {
+        classList: tRows?.classList || "table-row",
         ...tRows,
       },
       tableOptions: {
+        classList: {
+          table: tableOptions?.classList?.table || "table",
+          thead: tableOptions?.classList?.thead || "table-head",
+          theadWrapper:
+            tableOptions?.classList?.theadWrapper ||
+            "table-head-wrapper flex flex-col",
+          headArrowWrapper:
+            tableOptions?.classList?.headArrowWrapper ||
+            "head-arrow-wrapper flex flex-row items-center justify-between gap-[10px]",
+          sortArrows: {
+            container:
+              tableOptions?.classList?.sortArrows?.container ||
+              "sort-arrow-container flex flex-col select-none cursor-pointer",
+            arrowUp:
+              tableOptions?.classList?.sortArrows?.arrowUp ||
+              "sort-arrow-up mb-[-8.5px]",
+            arrowDown:
+              tableOptions?.classList?.sortArrows?.arrowDown ||
+              "ort-arrow-down mb-[-8.5px]",
+          },
+          filterInput: {
+            container:
+              tableOptions?.classList?.filterInput?.container ||
+              "filter-input-container relative min-h-[30px] flex items-center",
+            input:
+              tableOptions?.classList?.filterInput?.input ||
+              "filter-input w-full bg-white font-normal text-black text-[14px] border rounded-md p-1",
+          },
+          tbody: tableOptions?.classList?.tbody || "table-body",
+        },
         ...tableOptions,
       },
       sortOptions: {
@@ -48,14 +81,10 @@ export default component$(
         highlightColor: sortOptions?.highlightColor || "#484848",
         ...sortOptions,
       },
-      filterOptions: {
-        ...filterOptions,
-      },
+      filterOptions: filterOptions,
     })
-
     useTask$(async ({ track }) => {
       track(() => [sortConfigs.param, sortConfigs.order, filterConfigs.params])
-
       const filteredData = tData.filter((record: TableRecord) => {
         let i = 0
         tableData.tHeadings.headingList.map((param: string) => {
@@ -82,8 +111,8 @@ export default component$(
     })
 
     return (
-      <table class={tableData.tableOptions?.classList}>
-        <thead>
+      <table class={tableData.tableOptions?.classList?.table}>
+        <thead class={tableData.tableOptions?.classList?.thead}>
           <tr>
             {tableData.tHeadings.headingList.map(
               (heading: string, index: number) => (
@@ -95,8 +124,12 @@ export default component$(
                     ${tableData.tColumns?.columnClassList?.[heading]}
                   `}
                 >
-                  <div class="flex flex-col">
-                    <div class="flex flex-row items-center justify-between gap-[10px]">
+                  <div class={tableData.tableOptions?.classList?.theadWrapper}>
+                    <div
+                      class={
+                        tableData.tableOptions?.classList?.headArrowWrapper
+                      }
+                    >
                       {Object.keys(
                         tableData.tHeadings.customHeadings || []
                       ).includes(heading)
@@ -109,17 +142,9 @@ export default component$(
                       {tableData.sortOptions?.params?.includes(heading) && (
                         <SortArrows
                           heading={heading}
-                          classList={{
-                            container:
-                              tableData.tableOptions?.sortArrowsClassList
-                                ?.container,
-                            arrowUp:
-                              tableData.tableOptions?.sortArrowsClassList
-                                ?.arrowUp,
-                            arrowDown:
-                              tableData.tableOptions?.sortArrowsClassList
-                                ?.arrowDown,
-                          }}
+                          classList={
+                            tableData.tableOptions?.classList?.sortArrows
+                          }
                           sortConfigs={sortConfigs}
                           highlightColor={tableData.sortOptions.highlightColor}
                           defaultColor={tableData.sortOptions.defaultColor}
@@ -128,19 +153,25 @@ export default component$(
                     </div>
                     {Object.keys(tableData.filterOptions?.params || []).length >
                       0 && (
-                      <div class="relative min-h-[30px] flex items-center">
+                      <div
+                        class={
+                          tableData.tableOptions?.classList?.filterInput
+                            ?.container
+                        }
+                      >
                         {tableData.filterOptions?.params?.[heading] ===
                         "search" ? (
                           <FilterInput
                             classList={
-                              tableData.tableOptions?.filterInputClassList
+                              tableData.tableOptions?.classList?.filterInput
+                                ?.input
                             }
                             heading={heading}
                             filterConfigs={filterConfigs}
                           />
                         ) : tableData.filterOptions?.params?.[heading] ===
                           "options" ? (
-                          <></>
+                          <></> // "options" filter feature (tba)
                         ) : (
                           <></>
                         )}
@@ -152,7 +183,7 @@ export default component$(
             )}
           </tr>
         </thead>
-        <tbody>
+        <tbody class={tableData.tableOptions?.classList?.tbody}>
           {tableData.tData.map((record: TableRecord, index: number) => {
             return (
               <tr key={index}>
@@ -161,10 +192,10 @@ export default component$(
                     <td
                       key={index}
                       class={`
-                      ${tableData.tRows?.classList}
-                      ${tableData.tColumns?.classList}
-                      ${tableData.tColumns?.columnClassList?.[param]}
-                    `}
+                        ${tableData.tRows?.classList}
+                        ${tableData.tColumns?.classList}
+                        ${tableData.tColumns?.columnClassList?.[param]}
+                      `}
                     >
                       {tableData.tColumns?.element$?.[param]?.(record, param) ||
                         tableData.tColumns?.customColumns?.[param]?.(

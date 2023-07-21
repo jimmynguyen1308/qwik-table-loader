@@ -34,13 +34,17 @@ const SvgArrowDown = (props: QwikIntrinsicElements["svg"], key: string) => {
 export default component$(
   ({
     heading,
-    classList,
+    classList = {
+      container: "flex flex-col select-none cursor-pointer",
+      arrowUp: "mb-[-8.5px]",
+      arrowDown: "mb-[-8.5px]",
+    },
     sortConfigs,
     highlightColor,
     defaultColor,
   }: SortArrowsProps) => (
     <div
-      class={classList?.container || "flex flex-col select-none cursor-pointer"}
+      class={classList.container}
       onClick$={$(() => {
         if (sortConfigs.param === heading) {
           sortConfigs.order = ((sortConfigs.order + 1) % 3) as 0 | 1 | 2
@@ -51,7 +55,7 @@ export default component$(
       })}
     >
       <SvgArrowUp
-        class={classList?.arrowUp || "mb-[-8.5px]"}
+        class={classList.arrowUp}
         width={24}
         height={24}
         color={
@@ -61,7 +65,7 @@ export default component$(
         }
       />
       <SvgArrowDown
-        class={classList?.arrowDown || "mb-[-8.5px]"}
+        class={classList.arrowDown}
         width={24}
         height={24}
         color={

@@ -5,10 +5,7 @@ export default component$(
   ({ classList, heading, filterConfigs }: FilterInputProps) => (
     <input
       type="text"
-      class={
-        classList ||
-        "w-full bg-white font-normal text-black text-[14px] border rounded-md p-1"
-      }
+      class={classList}
       onInput$={$(
         (event: any) =>
           (filterConfigs.params = {
