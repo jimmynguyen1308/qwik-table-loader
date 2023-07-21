@@ -58,7 +58,7 @@ export type TableData = {
   }
   filterOptions?: {
     params?: {
-      [key: string]: "search" | "options"
+      [key: string]: string
     }
   }
 }
