@@ -19,7 +19,7 @@ By [`@jimmynguyen1308`](https://github.com/jimmynguyen1308)
 
 ### v0.0.8
 
-- Clean up package dependencies & unused files
+- Clean up package dependencies & unused files.
 
 ### v.0.0.7 (overhaul, more dynamic and s-table version)
 
