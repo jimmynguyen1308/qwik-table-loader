@@ -85,7 +85,7 @@ export default component$(() => {
 module.exports = {
   content: [
     "./src/**/*.{html,js,jsx,ts,tsx}", // your src directory
-    "./node_modules/qwik-table-loader/components/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/qwik-table-loader/components/**/*.{js,jsx,ts,tsx}", // remove this line if it "somehow" doesn't render
   ],
   theme: {
     extend: {},
