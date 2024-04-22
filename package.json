@@ -24,6 +24,9 @@
     "semi": false
   },
   "packageManager": "yarn@3.6.1",
+  "publishConfig": {
+    "@jimmynguyen1308:registry": "https://npm.pkg.github.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jimmynguyen1308/qwiktable.git"
