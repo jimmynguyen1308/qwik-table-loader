@@ -6,7 +6,7 @@ By [`@jimmynguyen1308`](https://github.com/jimmynguyen1308)
 
 ## Example 1
 
-Click [here](example1.tsx) to see code
+Click [here](example1.tsx) to see code & instructions
 
 ### Screenshot
 
@@ -14,8 +14,8 @@ Click [here](example1.tsx) to see code
 
 ## Example 2
 
-Click [here](example2.tsx) to see code
+Click [here](example2.tsx) to see code & instructions
 
 ### Screenshot
 
-![screenshot-1](screenshot-example-2.png)
+![screenshot-2](screenshot-example-2.png)

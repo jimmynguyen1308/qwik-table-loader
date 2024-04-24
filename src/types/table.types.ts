@@ -75,7 +75,7 @@ export type TBodyProps = {
 export type TableData = {
   // Table data
   tData: Array<CellData>
-  // Rendered elements
+  // Customized elements for table cells based on the column types
   element?: {
     [key: string]: QRL<(record: CellData, param: string) => JSXOutput>
   }
