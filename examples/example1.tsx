@@ -3,6 +3,7 @@ import TableLoader, { filterType } from "qwik-table-loader"
 import { CellData, FilterValue } from "qwik-table-loader/lib-types/types"
 
 export default component$(() => {
+  // You can have a set of options for your filter
   const statusOptions: FilterValue[] = [
     {
       key: 0,
@@ -22,6 +23,7 @@ export default component$(() => {
     },
   ]
 
+  // Given this is your raw data
   const data = [
     {
       id: 1,
@@ -60,6 +62,7 @@ export default component$(() => {
     },
   ]
 
+  // Special data types (eg. Date) should be optimized before loading to the table
   const tData = data.map((record: any) => {
     return {
       ...record,
@@ -73,6 +76,7 @@ export default component$(() => {
     }
   })
 
+  // Custom format table cell "dob"
   const formatDob = $((record: CellData, heading: string) => {
     const list = record[heading]?.toString()?.split("-")
     if (list) {
@@ -81,6 +85,7 @@ export default component$(() => {
     return ""
   })
 
+  // Custom format table cell "status"
   const formatStatus = $((record: CellData, heading: string) => {
     switch (record[heading]) {
       case 0:
@@ -118,19 +123,21 @@ export default component$(() => {
 
   return (
     <>
-      <Link href="/">
-        <span class="text-blue-500 underline">&lt;&lt; Go Back</span>
-      </Link>
       <TableLoader
+        // Your optimized data.
         tData={tData}
+        // Your custom elements based on the column types
         element={{
           dob: formatDob,
           status: formatStatus,
         }}
         tableOptions={{
+          // Customize your heading text here...
           customHeadings: {
             dob: "Date of Birth",
           },
+          // For pure CSS, you can attach class names and add .css file styling those classes
+          // For TailwindCSS, this is where you customize your table styling
           classNames: {
             table: "my-6 mx-3 border-2 border-[#333]",
             thead: "bg-gray-600 border-2 border-[#333]",
@@ -138,6 +145,7 @@ export default component$(() => {
             thContent: "h-full flex flex-col gap-1 min-w-[30px]",
             thText:
               "min-h-[24px] flex flex-row items-center justify-between gap-2",
+            // Arrows' size, default color and highlight color should be store like this format in sortContainer
             sortContainer:
               "flex flex-col -mr-1 size-[20] default-[#ccc] highlight-[#fff]",
             sortArrowUp: "-mb-[7px]",
@@ -148,22 +156,27 @@ export default component$(() => {
             tbody: "bg-gray-100",
             tr: "border border-[#ccc]",
             td: "border border-[#ccc] p-1 px-3",
+            // Custom class names based on column name
             tcol: {
               id: "max-w-[80px] text-center",
               fullName: "font-bold",
               dob: "max-w-[160px] text-right",
             },
           },
+          // Sort options: choose which columns to have the sort feature included
           sortOptions: {
             params: ["username", "fullName", "dob", "status"],
           },
           filterOptions: {
+            // You can use the filterType enum, or simply type "search" or "options"
             params: {
               username: filterType.SEARCH,
               fullName: filterType.SEARCH,
               dob: filterType.SEARCH,
               status: filterType.OPTIONS,
             },
+            // If a column has "options" filter, it needs to have an option list
+            // Otherwise, the options will be blank
             options: {
               status: statusOptions,
             },
