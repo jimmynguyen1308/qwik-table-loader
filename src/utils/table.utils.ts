@@ -15,7 +15,7 @@ export const sortTable = $(
           return 0
         })
     return sortedData
-  },
+  }
 )
 
 export const getTotalPages = $(
@@ -24,5 +24,5 @@ export const getTotalPages = $(
       Math.floor(total_record / record_per_page) +
       (total_record % record_per_page === 0 ? 0 : 1)
     )
-  },
+  }
 )

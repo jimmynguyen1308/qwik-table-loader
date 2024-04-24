@@ -1,8 +1,8 @@
-import { useStore, useTask$, component$, $ } from "@builder.io/qwik"
+import { useStore, useTask$, component$ } from "@builder.io/qwik"
 import TableHeader from "./TableHeader"
 import TableBody from "./TableBody"
 import { sortOrder, filterType } from "../constants"
-import { defaultClassNames } from "../utils/conf.utils"
+import { defaultClassNames } from "../constants"
 import { sortTable } from "../utils/table.utils"
 import type {
   TableData,
@@ -20,15 +20,29 @@ export default component$(({ tData, element, tableOptions }: TableData) => {
       order: 0,
     },
     filterConfig: {
-      params: {
-        name: "c",
-      },
+      params: {},
     },
   })
   const headings = Object.keys(tData[0])
   const theadClassNames: THeadClassNames = {
     thead: tableOptions?.classNames?.thead || defaultClassNames.thead,
     th: tableOptions?.classNames?.th || defaultClassNames.th,
+    thContent:
+      tableOptions?.classNames?.thContent || defaultClassNames.thContent,
+    thText: tableOptions?.classNames?.thText || defaultClassNames.thText,
+    sortContainer:
+      tableOptions?.classNames?.sortContainer ||
+      defaultClassNames.sortContainer,
+    sortArrowUp:
+      tableOptions?.classNames?.sortArrowUp || defaultClassNames.sortArrowUp,
+    sortArrowDown:
+      tableOptions?.classNames?.sortArrowDown ||
+      defaultClassNames.sortArrowDown,
+    filterContainer:
+      tableOptions?.classNames?.filterContainer ||
+      defaultClassNames.filterContainer,
+    filterInput:
+      tableOptions?.classNames?.filterInput || defaultClassNames.filterInput,
     td: tableOptions?.classNames?.td || defaultClassNames.td,
     tcol: tableOptions?.classNames?.tcol || undefined,
   }
@@ -46,37 +60,28 @@ export default component$(({ tData, element, tableOptions }: TableData) => {
       table.filterConfig.params,
     ])
 
-    // TODO: refactor this for better filtering
+    // Filter data by running through all available filters
     const filteredData = tData.filter((record: CellData) => {
       let i = 0
-      headings.map(async (id: string) => {
-        const abby = await tableOptions?.filterOptions?.values?.[id]?.(
-          record,
-          id,
-        )
-        console.log("test: ", abby)
+      headings.map((id: string) => {
         if (tableOptions?.filterOptions?.params?.[id] === filterType.SEARCH) {
-          // If filter option is "search"...
           if (
-            (!abby &&
-              record[id]
-                ?.toString()
-                .toLowerCase()
-                .includes(
-                  table.filterConfig.params[id]?.toString().toLowerCase(),
-                )) ||
-            abby
+            record[id]
               ?.toString()
               .toLowerCase()
               .includes(table.filterConfig.params[id]?.toString().toLowerCase())
           ) {
             ++i
           }
-          // If filter option is "options"...
         } else if (
           tableOptions?.filterOptions?.params?.[id] === filterType.OPTIONS
         ) {
-          if (record[id] === table.filterConfig.params[id]) ++i
+          if (
+            record[id]?.toString() ===
+              table.filterConfig.params[id]?.toString() ||
+            table.filterConfig.params[id] === "---"
+          )
+            ++i
         }
       })
       if (i === Object.keys(table.filterConfig.params).length) return record
@@ -90,12 +95,11 @@ export default component$(({ tData, element, tableOptions }: TableData) => {
       table.data = await sortTable(
         filteredData,
         table.sortConfig.param,
-        table.sortConfig.order === sortOrder.ASCENDING,
+        table.sortConfig.order === sortOrder.ASCENDING
       )
     }
   })
 
-  // @ts-ignore
   return (
     <table class={tableOptions?.classNames?.table || defaultClassNames.table}>
       <TableHeader

@@ -1,7 +1,7 @@
 import { component$, $ } from "@builder.io/qwik"
-import { sortOrder } from "../../constants"
+import { arrowConfig, sortOrder } from "../../constants"
 import type { QwikIntrinsicElements } from "@builder.io/qwik"
-import type { SortOrders } from "../../types"
+import type { SortArrows, SortOrders } from "../../types"
 
 const SvgArrowUp = (props: QwikIntrinsicElements["svg"], key: string) => {
   return (
@@ -32,38 +32,51 @@ const SvgArrowDown = (props: QwikIntrinsicElements["svg"], key: string) => {
   )
 }
 
-export default component$(({ heading, sortConfig }: any) => {
+export default component$(({ heading, classNames, sortConfig }: SortArrows) => {
+  let size: number = arrowConfig.size
+  let defaultColor: string = arrowConfig.defaultColor
+  let highlightColor: string = arrowConfig.highlightColor
+  classNames.sortContainer?.split(" ").map((c: string) => {
+    if (c.includes("size-[")) {
+      size = Number(c.substring(6, c.length - 1))
+    } else if (c.includes("default-[")) {
+      defaultColor = c.substring(9, c.length - 1)
+    } else if (c.includes("highlight-[")) {
+      highlightColor = c.substring(11, c.length - 1)
+    }
+  })
+
   const handleClick = $(() => {
     if (sortConfig.param === heading) {
       sortConfig.order = ((sortConfig.order + 1) % 3) as SortOrders
     } else {
       sortConfig.param = heading
-      sortConfig.order = 1
+      sortConfig.order = sortOrder.ASCENDING
     }
   })
 
   return (
-    <div onClick$={handleClick}>
+    <div class={classNames.sortContainer} onClick$={handleClick}>
       <SvgArrowUp
-        class={""}
-        width={24}
-        height={24}
+        class={classNames.sortArrowUp}
+        width={size}
+        height={size}
         color={
           sortConfig.param === heading &&
           sortConfig.order === sortOrder.ASCENDING
-            ? "#fff"
-            : "#ccc"
+            ? highlightColor
+            : defaultColor
         }
       />
       <SvgArrowDown
-        class={""}
-        width={24}
-        height={24}
+        class={classNames.sortArrowDown}
+        width={size}
+        height={size}
         color={
           sortConfig.param === heading &&
           sortConfig.order === sortOrder.DESENDING
-            ? "#fff"
-            : "#ccc"
+            ? highlightColor
+            : defaultColor
         }
       />
     </div>

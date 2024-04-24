@@ -12,6 +12,20 @@ export type THeadClassNames = BaseClassNames & {
   thead?: string
   // Class name for <th> tag
   th?: string
+  // Class name containing header content (text, sort arrows and filter input)
+  thContent?: string
+  // Class name containing header text & sort arrows
+  thText?: string
+  // Class name containing sort arrows
+  sortContainer?: string
+  // Class name for sort arrow UP
+  sortArrowUp?: string
+  // Class name for sort arrow DOWN
+  sortArrowDown?: string
+  // Class name containing filter input
+  filterContainer?: string
+  // Class name for filter input
+  filterInput?: string
 }
 
 export type TBodyClassNames = BaseClassNames & {

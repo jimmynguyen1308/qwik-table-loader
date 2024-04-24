@@ -1,4 +1,5 @@
 import { $ } from "@builder.io/qwik"
+import type { CellData, FilterValue } from "../types"
 
 export const param2Text = $((param: string) => {
   // Special cases
@@ -20,8 +21,23 @@ export const param2Text = $((param: string) => {
       (returnVal +=
         word.charAt(0).toUpperCase() +
         word.slice(1) +
-        (index === snakeCaseWords.length - 1 ? "" : " ")),
+        (index === snakeCaseWords.length - 1 ? "" : " "))
   )
 
   return returnVal
 })
+
+export const value2Options = (data: Array<CellData>, param: string) => {
+  const optionsMap = new Map()
+  let i = 0
+  data.map((record: CellData) => {
+    if (!optionsMap.has(record[param])) {
+      optionsMap.set(record[param], i)
+      ++i
+    }
+  })
+  return Array.from(optionsMap, ([name, value]) => ({
+    key: name,
+    value: name,
+  })) as Array<FilterValue>
+}

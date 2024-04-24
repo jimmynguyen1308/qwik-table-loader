@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik"
-import { TBodyProps, CellData } from "../types"
+import type { TBodyProps, CellData } from "../types"
 
 export default component$(
   ({ data, headings, classNames, element }: TBodyProps) => {
@@ -21,5 +21,5 @@ export default component$(
         })}
       </tbody>
     )
-  },
+  }
 )

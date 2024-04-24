@@ -1,11 +1,16 @@
-import type { JSXChildren, QRL } from "@builder.io/qwik"
+import type { JSXOutput, QRL } from "@builder.io/qwik"
 import {
   THeadClassNames,
   TBodyClassNames,
   TableClassNames,
 } from "./class.types"
 import { SortConfig, SortOptions } from "./sort.types"
-import { FilterConfig, FilterOptions } from "./filter.types"
+import {
+  FilterConfig,
+  FilterOptions,
+  FilterTypes,
+  FilterValue,
+} from "./filter.types"
 
 export type THeadProps = {
   // List of table headings
@@ -28,8 +33,30 @@ export type THeadProps = {
   filterConfig: FilterConfig
 }
 
+export type SortArrows = {
+  // Heading
+  heading: string
+  // List of class names
+  classNames: THeadClassNames
+  // Sort config
+  sortConfig: SortConfig
+}
+
+export type FilterInput = {
+  // Heading
+  heading: string
+  // List of class names
+  classNames: THeadClassNames
+  // Filter type
+  filterType: FilterTypes
+  // Filter config
+  filterConfig: FilterConfig
+  // Filter options
+  options?: Array<FilterValue>
+}
+
 export type CellData = {
-  [key: string]: JSXChildren
+  [key: string]: JSXOutput
 }
 
 export type TBodyProps = {
@@ -41,7 +68,7 @@ export type TBodyProps = {
   classNames: TBodyClassNames
   // Rendered elements
   element?: {
-    [key: string]: QRL<(record: CellData, param: string) => JSXChildren>
+    [key: string]: QRL<(record: CellData, param: string) => JSXOutput>
   }
 }
 
@@ -50,7 +77,7 @@ export type TableData = {
   tData: Array<CellData>
   // Rendered elements
   element?: {
-    [key: string]: QRL<(record: CellData, param: string) => JSXChildren>
+    [key: string]: QRL<(record: CellData, param: string) => JSXOutput>
   }
   // Table options
   tableOptions?: {
