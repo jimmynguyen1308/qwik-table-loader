@@ -6,7 +6,9 @@ By [`@jimmynguyen1308`](https://github.com/jimmynguyen1308)
 
 ## Overview
 
-`qwik-table-loader` is a table library for [Qwik](https://qwik.builder.io/) which is _(heavily)_ inspired by [Tanstack Table](https://tanstack.com/table/).
+`qwik-table-loader` is a table library for [Qwik](https://qwik.builder.io/) which was inspired by [Tanstack Table](https://tanstack.com/table/) during early stages of the development process.
+
+With recent devlopment from Qwik, the library shifts its own direction to fit Qwik's new directions.
 
 ## Docs
 
@@ -17,11 +19,22 @@ By [`@jimmynguyen1308`](https://github.com/jimmynguyen1308)
 
 ## Features
 
+### v0.1.0 (another overhaul to fit Qwik development directions)
+
+- Rebuild the whole library using Qwik component library template, so the package is waaaaay cleaner and lighter
+- Make changes to parameter naming & component structure (see [API](#api) for more details)
+- Add new filter type "options"
+- Add examples (screenshots, code & instructions)
+
 ### v0.0.8
+
+[Documentation](https://www.npmjs.com/package/qwik-table-loader/v/0.0.8)
 
 - Clean up package dependencies & unused files.
 
 ### v.0.0.7 (overhaul, more dynamic and s-table version)
+
+[Documentation](https://www.npmjs.com/package/qwik-table-loader/v/0.0.7)
 
 - Use `TableLoader` component to render table.
 - Customize table elements & features by parsing properties into `TableLoader`.
@@ -44,326 +57,219 @@ Yarn...
 yarn add -D qwik-table-loader
 ```
 
-or pnpm...
+pnpm...
 
 ```bash
 pnpm install -D qwik-table-loader
+```
+
+or bun...
+
+```bash
+bun install -D qwik-table-loader
 ```
 
 ... I don't care I'm not your dad.
 
 ### 2. Add to codebase
 
-Import the library and add it to the codebase
+Import the library and add it to the codebase. Here the example of what you can import from the library...
 
 ```typescript
-import { component$, $ } from "@builder.io/qwik"
-import TableLoader from "qwik-table-loader/components/TableLoader"
-import type { TableRecord } from "qwik-table-loader/types"
-import { data } from "~/__mocked__/data"
-
-export default component$(() => {
-  const tData: TableRecord[] = data
-  const tHeadings = {
-    classList: "bg-gray-500 text-left text-white",
-    customHeadings: {
-      id: "Product ID",
-    },
-    element$: $((heading: string) => `Product:${heading}`),
-  }
-  const tRows = {
-    classList: "p-2 py-6",
-  }
-  return <TableLoader tData={tData} tHeadings={tHeadings} tRows={tRows} />
-})
+import TableLoader, { value2Options, filterType } from "qwik-table-loader"
+import { CellData, FilterValue } from "qwik-table-loader/lib-types/types"
 ```
 
-(For **TailwindCSS**) Add the component library directory to `tailwind.config.js` file
+### 3. Develop & customize
 
-```typescript
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./src/**/*.{html,js,jsx,ts,tsx}", // your src directory
-    "./node_modules/qwik-table-loader/components/**/*.{js,jsx,ts,tsx}", // remove this line if it "somehow" doesn't render
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-```
+In order to build and style the table component to be something like this...
 
-### 3. Customize loader's properties
+![](https://raw.githubusercontent.com/jimmynguyen1308/qwik-table-loader/master/examples/screenshot-example-1.png)
 
-In order to customize the table, simply provide your desired properties to the `TableLoader` (see [API](#api) for more details).
+Please check [API](#api) along with the examples [here](https://github.com/jimmynguyen1308/qwiktable/tree/master/examples/README.md) for in-depth instructions
 
 ## API
 
-### 1. `TableLoader` properties
+This section contains information about the overall structure of the so-called `TableLoader`, its properties, default values and related utilities.
 
-You can choose to add different properties to `TableLoader` components in order to configure and customize the table's data, custom features (i.e. sorting and filtering), and class lists.
+### `TableLoader`
+
+- Type: Function Component
+- Props: `TableData` (see below)
+
+You can choose to add different properties to `TableLoader` components in order to display your data onto the table, add features such as sort & filter, as well as style the table using class names.
 
 ```typescript
-type TableProps = {
-  tData: Array<TableRecord>
-  tHeadings?: {
-    classList?: string
-    customHeadings?: {
-      [key: string]: string
-    }
-    element$?: {
-      [key: string]: QRL<(heading: string) => JSXNode | string>
-    }
+type CellData = {
+  [key: string]: JSXOutput
+}
+
+type TableData = {
+  // Table data (data optimization recommended)
+  tData: Array<CellData>
+  // Customized elements for table cells based on the column types
+  element?: {
+    [key: string]: QRL<(record: CellData, param: string) => JSXOutput>
   }
-  tColumns?: {
-    classList?: string
-    columnClassList?: {
-      [key: string]: string
-    }
-    customColumns?: {
-      [key: string]: QRL<(record: TableRecord, param: string) => string>
-    }
-    element$?: {
-      [key: string]: QRL<
-        (record: TableRecord, param: string) => JSXNode | string
-      >
-    }
-  }
-  tRows?: {
-    classList?: string
-  }
+  // Table options
   tableOptions?: {
-    classList?: {
-      table?: string
-      thead?: string
-      theadWrapper?: string
-      headArrowWrapper?: string
-      sortArrows?: {
-        container?: string
-        arrowUp?: string
-        arrowDown?: string
-      }
-      filterInput?: {
-        container?: string
-        input?: string
-      }
-      tbody?: string
+    // Custom headings
+    customHeadings?: {
+      [heading: string]: string
     }
-  }
-  sortOptions?: {
-    params?: Array<string>
-    defaultColor?: string
-    highlightColor?: string
-  }
-  filterOptions?: {
-    params?: {
-      [key: string]: "search" | "options" // "options" filter T.B.D.
+    // List of class names (see 4. Default Class Names for more)
+    classNames?: TableClassNames
+    // Sort options
+    sortOptions?: {
+      // Sortable parameters
+      params: Array<string>
+    }
+    // Filter options
+    filterOptions?: {
+      // Filter types based on parameters
+      params: {
+        [key: string]: FilterTypes
+      }
+      // Filter options (for "options"-typed filters)
+      options?: {
+        [key: string]: Array<FilterValue>
+      }
     }
   }
 }
 ```
 
-#### 1.1. tData
+#### 1. tData
 
-- Type: `Array<TableRecord>`
+- Type: `Array<CellData>`
 - Required: `true`
 
-Table data. This property is the ONLY mandatory one in order to generate table.
+Table data. This property is the ONLY mandatory one in order to generate table (duh). Data optimization, meaning converting them into simple types such as string, number or boolean, is recommended in order to enable other features.
 
-#### 1.2. tHeadings
+#### 2. element _(renamed from element$, 'cuz Qwik hates it)_
 
-Table heading properties. Including the configures affecting the `<thead>` part of the table.
+- Type: `QRL<(record: CellData, param: string) => JSXOutput>`
 
-#### 1.2.1. tHeadings.classList
+Custom element to be rendered instead of plain data from `tData`. For example:
 
-- Type: `string`
-- Default: `"table-heading"`
+```typescript
+// it can be like this...
+const formatStatus = $((record: CellData, param: string) => {
+  switch (record[param]) {
+    case 0:
+      return "Inactive"
+    case 1:
+      return "Active"
+    default:
+      return "Unknown"
+  }
+})
 
-Table heading class list. Customize this property for styling purposes.
+// or it can be like this...
+const formatCell = $((record: CellData, param: string) => (
+  <span class="bg-green-400 rounded-md p-1">
+    {record[param]}
+  </span>
+))
+```
 
-#### 1.2.2. tHeadings.customHeadings
+For detailed use cases, check out my [examples](https://github.com/jimmynguyen1308/qwiktable/tree/master/examples/README.md).
 
-- Type: `{ [key: string]: string }`
+#### 3. tableOptions.customHeadings
+
+- Type: `{ [heading: string]: string }`
 
 Configure this property to render given headings into custom ones as you wish. For example:
 
 ```typescript
-tHeadings: {
+tableOptions: {
   customHeadings: {
     id: "Product ID",
     dob: "Date of Birth",
     some_random_key: "Custom Heading"
   }
+  // ...
 }
 ```
 
-#### 1.2.3. tHeadings.element$
+#### 4. tableOptions.classNames
 
-- Type: `{ [key: string]: QRL<(heading: string) => JSXNode | string> }`
+- Type: `TableClassNames`
+- Default: `defaultClassNames` (see below)
 
-Configure this property to render given headings into custom ones as you wish. Similar to `tHeadings.customHeadings`, BUT the return values can be elements also. For example:
+Collection of class names within the `TableLoader`. It is highly recommended to configure this for table styling, with **TailwindCSS** or otherwise.
+
+Here are the default class names (which include some names for **TailwindCSS** styling)...
 
 ```typescript
-tHeadings: {
-  customHeadings: {
-    prodId: $((heading: string) => "Product ID"),
-    some_random_key: $((heading: string) => (
-      <span class="text-rose-500">{heading}</span>
-    ))
-  }
+// For pure CSS, you can attach class names and add .css file styling those classes
+// For TailwindCSS, this is where you customize your table styling
+export const defaultClassNames: TableClassNames = {
+  table: "table my-6 mx-3 border-2 border-[#333]",
+  thead: "table-head bg-gray-600 border-2 border-[#333]",
+  th: "table-heading text-white border border-[#333] p-2 px-4",
+  thContent: "table-heading-content h-full flex flex-col gap-1 min-w-[30px]",
+  thText:
+    "table-heading-text min-h-[24px] flex flex-row items-center justify-between gap-2",
+  // Arrows' size, default color and highlight color should be store like this format in sortContainer
+  sortContainer: `sort-container flex flex-col -mr-1 size-[20] default-[#ccc] highlight-[#fff]`,
+  sortArrowUp: "sort-arrow-up -mb-[7px]",
+  sortArrowDown: "sort-arrow-down -mt-[7px]",
+  filterContainer: "filter-container min-h-[24px]",
+  filterInput:
+    "filter-input w-full outline-none text-black font-light p-1 px-2 rounded-md",
+  tbody: "table-body bg-gray-100",
+  tr: "table-row border border-[#ccc]",
+  td: "table-cell border border-[#ccc] p-1 px-3",
 }
 ```
 
-#### 1.3. tColumns
+And here is how those class names are placed within the table...
 
-Table column properties. Including the configures affecting table columns.
-
-#### 1.3.1. tColumns.classList
-
-- Type: `string`
-- Default: `"table-column"`
-
-Table column class list. Customize this property for styling purposes.
-
-#### 1.3.2. tColumns.columnClassList
-
-- Type: `{ [key: string]: string }`
-
-Configure this property to add custom class list to columns as you wish (for styling purposes). For example:
-
-```typescript
-tColumns: {
-  columnClassList: {
-    id: "w-[50px]",
-    description: "max-w-[200px]"
-  }
-}
-```
-
-#### 1.3.3. tColumns.customColumms
-
-- Type: `{ [key: string]: QRL<(record: TableRecord, param: string) => string> }`
-
-Configure this property to render custom columns as you wish. Similar to `tColumns.element$`; however, this is most likely to be used for the filter feature in future updates (not developed). For example:
-
-```typescript
-tColumns: {
-  customColumns: {
-    status: $((record: TableRecord, param: string) => {
-      switch (record[param]) {
-        case 0:
-          return "Inactive"
-        case 1:
-          return "Active"
-        default:
-          return "Unknown"
-      }
-    })
-  }
-}
-```
-
-#### 1.3.4. tColumns.element$
-
-- Type: `{ [key: string]: QRL<(record: TableRecord, param: string) => JSXNode | string> }`
-
-Configure this property to render custom columns as you wish. Similar to `tColumns.customColumns`, BUT the return values can be elements also. For example:
-
-```typescript
-tColumns: {
-  customColumns: {
-    status: $((record: TableRecord, param: string) => {
-      switch (record[param]) {
-        case 0:
-          return <span class="text-[#f00]">Inactive</span>
-        case 1:
-          return <span class="text-[#0f0]">Active</span>
-        default:
-          return <span>Unknown</span>
-      }
-    })
-  }
-}
-```
-
-#### 1.4. tRows
-
-Table row properties. Including the configures affecting table rows _(excluding the table heading row)_.
-
-#### 1.4.1. tRows.classList
-
-- Type: `string`
-- Default: `"table-row"`
-
-Table row class list. Customize this property for styling purposes.
-
-#### 1.5. tableOptions
-
-Contains general configuration options for the table.
-
-#### 1.5.1. tableOptions.classList
-
-Table class lists. Customize this property for styling purposes, given the overall structure of `TableLoader` component...
-
-```typescript
-return (
-  <table class={tableOptions.classList.table}>
-    <thead class={tableOptions.classList.thead}>
-      <tr>
-        <th
-          class={`
-            ${tHeadings.classList}
-            ${tColumns.classList}
-            ${ttColumns.columnClassList[heading]}
-          `}
-        >
-          <div class={tableOptions.classList.theadWrapper}>
-            <div class={tableOptions.classList.headArrowWrapper}>
-              {/* table heading here... */}
-              <SortArrows
-                classList={{
-                  container: tableOptions.classList.sortArrows.container,
-                  arrowUp: tableOptions.classList.sortArrows.arrowUp,
-                  arrowDown: tableOptions.classList.sortArrows.arrowDown,
-                }}
-              />
-            </div>
-            <div class={tableOptions.classList.filterInput.container}>
-              <FilterInput class={tableOptions.classList.filterInput.input}>
+```html
+<table class="defaultClassNames.table">
+  <!-- Table header -->
+  <thead class="defaultClassNames.thead">
+    <tr>
+      <th class="defaultClassNames.th customClassNames.tCol[heading]">
+        <div class="defaultClassNames.thContent">
+          <div class="tableOptions.classList.thText">
+            {/* table heading here... */}
+            <div class="defaultClassNames.sortContainer">
+              <svg class="defaultClassNames.sortArrowUp"></svg>
+              <svg class="defaultClassNames.sortArrowDown"></svg>
             </div>
           </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody class={tableOptions.classList.tbody}>
-      <tr>
-        <td
-          class={`
-            ${tRows.classList}
-            ${tColumns.classList}
-            ${tColumns.columnClassList[param]}
-          `}
-        >
-          {/* table data here... */}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-)
+          <div class="defaultClassNames.filterContainer">
+            <!-- For "search" filter -->
+            <input class="defaultClassNames.filterInput" />
+            <!-- For "options" filter -->
+            <select class="defaultClassNames.filterInput"></select>
+          </div>
+        </div>
+      </th>
+    </tr>
+  </thead>
+  <!-- Table body -->
+  <tbody class="defaultClassNames.tbody">
+    <tr class="defaultClassNames.tr">
+      <td class="defaultClassNames.td customClassNames.tCol[heading]">
+        {/* table data here... */}
+      </td>
+    </tr>
+  </tbody>
+</table>
 ```
 
 (For **TailwindCSS**) the default class lists also include some basic classes for TailwindCSS. Simply change the class lists to make changes to the default styling.
 
-#### 1.6. sortOptions
+#### 5. sortOptions
+
+- Type: `{ params: string[] }`
 
 Contains configuration options for `TableLoader` sorting feature.
 
-#### 1.6.1. sortOptions.params
-
-- Type: `string[]`
-
-Parameters that you wish to have the sorting feature. For example:
+**Params:** Parameters that you wish to have the sorting feature. For example:
 
 ```typescript
 const tData = [
@@ -383,22 +289,14 @@ const tData = [
 
 const sortOptions = {
   params: ["id", "name", "dob"], // sorting button will show in these columns
-  defaultColor: "black",
-  highlightColor: "#f00",
 }
 ```
 
-#### 1.6.2. sortOptions.defaultColor & sortOptions.highlightColor
-
-- Type: `string`
-
-Colors of the sorting arrow SVGs when the sorting feature is toggled on (`highlightColor`) and toggled off (`defaultColor`). Since it's parsed directly into the SVG, it supports all color types (i.e. plain text, hex code, RGB, etc.)
-
-#### 1.7. filterOptions
+#### 6. filterOptions
 
 Contains configuration options for `TableLoader` filtering feature.
 
-#### 1.7.1. filterOptions.params
+**filterOptions.params**
 
 - Type: `{ [key: string]: "search" | "options" }`
 
@@ -414,11 +312,13 @@ const filterOptions = {
 }
 ```
 
-The "search" filter is ready to be used. The "options" filter, on the other hand, is not yet developed. Hopefully it will be updated in future updates.
+**filterOptions.options**
 
-### 2. Methods
+- Type: `{ [key: string]: FilterValue[] }`
 
-Including built-in methods for sophisticated table functionalities. See [here](https://github.com/jimmynguyen1308/qwiktable/tree/master/utils).
+Options which required in "options"-typed filters
+
+For detailed use cases, check out my [examples](https://github.com/jimmynguyen1308/qwiktable/tree/master/examples/README.md).
 
 ## Read More
 
