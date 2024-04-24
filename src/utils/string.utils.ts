@@ -36,7 +36,7 @@ export const value2Options = (data: Array<CellData>, param: string) => {
       ++i
     }
   })
-  return Array.from(optionsMap, ([name, value]) => ({
+  return Array.from(optionsMap, ([name]) => ({
     key: name,
     value: name,
   })) as Array<FilterValue>
