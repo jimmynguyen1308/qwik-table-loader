@@ -1,8 +1,15 @@
-export const param2string = (str: string) => {
+import { $ } from "@builder.io/qwik"
+
+export const param2Text = $((param: string) => {
+  // Special cases
+  if (param === "id") {
+    return "ID"
+  }
+
   let returnVal: string = ""
 
   // Convert camel case
-  const camelCaseWords = str.replace(/([A-Z])/g, " $1")
+  const camelCaseWords = param.replace(/([A-Z])/g, " $1")
   const result =
     camelCaseWords.charAt(0).toUpperCase() + camelCaseWords.slice(1)
 
@@ -13,13 +20,8 @@ export const param2string = (str: string) => {
       (returnVal +=
         word.charAt(0).toUpperCase() +
         word.slice(1) +
-        (index === snakeCaseWords.length - 1 ? "" : " "))
+        (index === snakeCaseWords.length - 1 ? "" : " ")),
   )
 
   return returnVal
-}
-
-export const string2param = (str: string, method: "snake" | "camel") =>
-  method === "snake"
-    ? str.toLowerCase().replaceAll(" ", "_")
-    : str.charAt(0).toLowerCase() + str.slice(1).replaceAll(" ", "")
+})

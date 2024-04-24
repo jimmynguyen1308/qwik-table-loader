@@ -1,8 +1,8 @@
 import { $ } from "@builder.io/qwik"
-import type { TableRecord } from "../types"
+import type { CellData } from "../types"
 
 export const sortTable = $(
-  (data: Array<TableRecord>, param: string, isAscending: boolean) => {
+  (data: Array<CellData>, param: string, isAscending: boolean) => {
     const sortedData = isAscending
       ? [...data].sort((a, b) => {
           if (a[param]! < b[param]!) return -1
@@ -15,15 +15,14 @@ export const sortTable = $(
           return 0
         })
     return sortedData
-  }
+  },
 )
 
-export const getTotalPages = (
-  total_record: number,
-  record_per_page: number
-) => {
-  return (
-    Math.floor(total_record / record_per_page) +
-    (total_record % record_per_page === 0 ? 0 : 1)
-  )
-}
+export const getTotalPages = $(
+  (total_record: number, record_per_page: number) => {
+    return (
+      Math.floor(total_record / record_per_page) +
+      (total_record % record_per_page === 0 ? 0 : 1)
+    )
+  },
+)

@@ -1,6 +1,7 @@
 import { component$, $ } from "@builder.io/qwik"
+import { sortOrder } from "../../constants"
 import type { QwikIntrinsicElements } from "@builder.io/qwik"
-import type { SortArrowsProps } from "../types"
+import type { SortOrders } from "../../types"
 
 const SvgArrowUp = (props: QwikIntrinsicElements["svg"], key: string) => {
   return (
@@ -31,49 +32,40 @@ const SvgArrowDown = (props: QwikIntrinsicElements["svg"], key: string) => {
   )
 }
 
-export default component$(
-  ({
-    heading,
-    classList = {
-      container: "flex flex-col select-none cursor-pointer",
-      arrowUp: "mb-[-8.5px]",
-      arrowDown: "mb-[-8.5px]",
-    },
-    sortConfigs,
-    highlightColor,
-    defaultColor,
-  }: SortArrowsProps) => (
-    <div
-      class={classList.container}
-      onClick$={$(() => {
-        if (sortConfigs.param === heading) {
-          sortConfigs.order = ((sortConfigs.order + 1) % 3) as 0 | 1 | 2
-        } else {
-          sortConfigs.param = heading
-          sortConfigs.order = 1
-        }
-      })}
-    >
+export default component$(({ heading, sortConfig }: any) => {
+  const handleClick = $(() => {
+    if (sortConfig.param === heading) {
+      sortConfig.order = ((sortConfig.order + 1) % 3) as SortOrders
+    } else {
+      sortConfig.param = heading
+      sortConfig.order = 1
+    }
+  })
+
+  return (
+    <div onClick$={handleClick}>
       <SvgArrowUp
-        class={classList.arrowUp}
+        class={""}
         width={24}
         height={24}
         color={
-          sortConfigs.param === heading && sortConfigs.order === 1
-            ? highlightColor
-            : defaultColor
+          sortConfig.param === heading &&
+          sortConfig.order === sortOrder.ASCENDING
+            ? "#fff"
+            : "#ccc"
         }
       />
       <SvgArrowDown
-        class={classList.arrowDown}
+        class={""}
         width={24}
         height={24}
         color={
-          sortConfigs.param === heading && sortConfigs.order === 2
-            ? highlightColor
-            : defaultColor
+          sortConfig.param === heading &&
+          sortConfig.order === sortOrder.DESENDING
+            ? "#fff"
+            : "#ccc"
         }
       />
     </div>
   )
-)
+})
